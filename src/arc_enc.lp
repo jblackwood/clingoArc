@@ -309,7 +309,7 @@ gridEqual_hasCellValue(G, X, Y, C):-
 
 
 %%%%%%%%%%%%%%%%%%%% Show %%%%%%%%%%%%%%%%%%%%%
-varTypes(VarId, T) :- 
+varType(VarId, T) :- 
     isVariable(VarId),
     type(VarId, T).
 
@@ -325,7 +325,7 @@ var2_train0_child(Child, Type, X, Y, C) :-
     color(Child, C).
 
 % #show var2_train0_child/5.
-#show varTypes/2.
+#show varType/2.
 #show argVal/2.
 #show functionId/2.
 % #show var1_train0_child_numColors/3.
