@@ -14,7 +14,3 @@ witnesses = result['Call'][0]['Witnesses']
 
 witnessSets = [set(w['Value']) for w in witnesses]
 
-firstSet = witnessSets[0]
-
-diff = [sorted(s.difference(firstSet)) for s in witnessSets]
-pprint.pp(diff)

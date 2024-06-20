@@ -97,13 +97,14 @@ for idx, ioPair in enumerate(task['train']):
         entities.append(e)
 
 
-# Todo - in future consider making this dependent on grid size
-NUM_CHILDREN = 9
+# Todo - in future consider having constant for NumObjects
+# and only allow children 0..NumObjects to have sub-children
+GRID_SIZE = 9
 
 # variable instance children
 allVarInstances : list[Entity] = [e for e in entities if e.get('isVarInstance')]
 for i in allVarInstances:
-    for c1 in range(0, NUM_CHILDREN):
+    for c1 in range(0, GRID_SIZE):
         l1_childId = f"{i['id']}_child{c1}"
         l1_child = {
             'id': l1_childId,
@@ -111,7 +112,7 @@ for i in allVarInstances:
         }
         entities.append(l1_child)
         i['child'].append(l1_childId)
-        for c2 in range(0, NUM_CHILDREN):
+        for c2 in range(0, GRID_SIZE):
             l2_childId = f"{l1_childId}_child{c2}"
             l2_child = {
                 'id': l2_childId,
