@@ -1,5 +1,3 @@
-#include "moveBlueSquaresv2_inst.lp".
-
 % copyCell
 type(Id2, cell) :- 
     copyCell(_, Id2).
