@@ -270,7 +270,7 @@ color(OutputCell, C) :-
 
 
 
-
+%%%%%%%%%%%%%%%%%%%% Output Grid Constraint %%%%%%%%%%%%%%%%%%%%%
 % Output grid must be equal to var2 instance
 gridEqual(OutputGrid, VarInst):- 
     isOutputGrid(OutputGrid),
@@ -308,11 +308,7 @@ gridEqual_hasCellValue(G, X, Y, C):-
 
 
 
-
-
-% functionId(call1, parseObjects).
-% functionId(call2, moveDown).
-
+%%%%%%%%%%%%%%%%%%%% Show %%%%%%%%%%%%%%%%%%%%%
 varTypes(VarId, T) :- 
     isVariable(VarId),
     type(VarId, T).
@@ -341,66 +337,3 @@ var2_train0_child(Child, Type, X, Y, C) :-
 % var0_train0_mostColor(C) :- mostColor(var0_train0, C).
 % #show var0_train0_numColor/2.
 % #show var0_train0_mostColor/1.
-
-
-
-
-
-
-% %% moveDown
-% id(moveDown).
-% type(moveDown, function).
-
-% % moveDown 1st arg is a grid
-% {argVal(ArgId, VarId) : isVariable(VarId), type(VarId, grid)} = 1 :-  
-%     functionId(CallId, moveDown),
-%     type(CallId, functionCall),
-%     lineNum(CallId, LineNum),
-%     isArgument(ArgId),
-%     lineNum(ArgId, LineNum),
-%     argPos(ArgId, 0).
-
-% % moveDown 2nd arg is a listObjects
-% {argVal(ArgId, VarId) : isVariable(VarId), type(VarId, listObjects)} = 1 :-  
-%     functionId(CallId, moveDown),
-%     type(CallId, functionCall),
-%     lineNum(CallId, LineNum),
-%     isArgument(ArgId),
-%     lineNum(ArgId, LineNum),
-%     argPos(ArgId, 1).
-
-% % moveDown returns a grid
-% type(VarId, grid) :-  
-%     functionId(CallId, moveDown),
-%     type(CallId, functionCall),
-%     lineNum(CallId, LineNum),
-%     isVariable(VarId),
-%     lineNum(VarId, LineNum).
-
-% moveDown 
-
-
-
-% require parseObjects and moveDown order
-% functionId(call1, parseObjects).
-% functionId(call2, moveDown).
-
-% varTypes(V, T) :- isVariable(V), type(V, T).
-
-% % Show program calls and args
-% #show argVal/2.
-% #show functionId/2.
-% #show varTypes/2.
-
-% var0_train0_numColor(C, N) :- numColor(var0_train0, C, N).
-% var0_train0_mostColor(C) :- mostColor(var0_train0, C).
-% var1_train0_obj(E1) :- contains(var1_train0, E1).
-% var1_train0_cellId(CellId) :- var1_train0_obj(E1), contains(E1, CellId).
-% e1NumColor(C, N) :- var1_train0_obj(E1), numColor(E1, C, N).
-% #show var1_train0_obj/1.
-% #show var0_train0_numColor/2.
-% #show var0_train0_mostColor/1.
-% #show var1_train0_cellId/1.
-% #show e1NumColor/2.
-
-
