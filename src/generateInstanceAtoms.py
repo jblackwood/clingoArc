@@ -1,10 +1,11 @@
 import os
 import json
 from arc_types import Task, Entity
-import pprint
+import sys
 
-taskFilepath : str = os.path.abspath('myTasks/moveBlueSquare.json')
-outputFilepath = os.path.abspath('src/moveBlueSquaresv2_inst.lp')
+taskName: str = sys.argv[1]
+taskFilepath : str = os.path.abspath(f'myTasks/json/{taskName}.json')
+outputFilepath = os.path.abspath(f'myTasks/lp/{taskName}.lp')
 
 with open(taskFilepath, 'r') as f:
     taskDataStr : str = f.read()
