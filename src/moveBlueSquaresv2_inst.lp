@@ -42,7 +42,7 @@ id(cell_train0_input_y0_x2).
 type(cell_train0_input_y0_x2, cell).
 y(cell_train0_input_y0_x2, 0).
 x(cell_train0_input_y0_x2, 2).
-color(cell_train0_input_y0_x2, 0).
+color(cell_train0_input_y0_x2, 1).
 
 id(cell_train0_input_y1_x0).
 type(cell_train0_input_y1_x0, cell).
@@ -114,7 +114,7 @@ id(cell_train0_output_y1_x2).
 type(cell_train0_output_y1_x2, cell).
 y(cell_train0_output_y1_x2, 1).
 x(cell_train0_output_y1_x2, 2).
-color(cell_train0_output_y1_x2, 0).
+color(cell_train0_output_y1_x2, 1).
 
 id(cell_train0_output_y2_x0).
 type(cell_train0_output_y2_x0, cell).

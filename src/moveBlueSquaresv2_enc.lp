@@ -1,59 +1,42 @@
 #include "moveBlueSquaresv2_inst.lp".
 
-% copy input grid children properties into var0
-type(Child, T) :- 
-    type(CellId, T),
-    child(G, N, CellId),
-    isInputGrid(G),
-    instance(G, I),
-    isVarInstance(VarInst),
-    instance(VarInst, I),
-    lineNum(VarInst, 0),
-    child(VarInst, N, Child).
+% copyCell
+type(Id2, cell) :- 
+    copyCell(_, Id2).
 
-y(Child, Y) :- 
-    y(CellId, Y),
-    child(G, N, CellId),
-    isInputGrid(G),
-    instance(G, I),
-    isVarInstance(VarInst),
-    instance(VarInst, I),
-    lineNum(VarInst, 0),
-    child(VarInst, N, Child).
+y(Id2, Val) :-
+    copyCell(Id1, Id2),
+    y(Id1, Val).
 
-x(Child, X) :- 
-    x(CellId, X),
-    child(G, N, CellId),
-    isInputGrid(G),
-    instance(G, I),
-    isVarInstance(VarInst),
-    instance(VarInst, I),
-    lineNum(VarInst, 0),
-    child(VarInst, N, Child).
+x(Id2, Val) :-
+    copyCell(Id1, Id2),
+    x(Id1, Val).
 
-color(Child, C) :- 
-    color(CellId, C),
-    child(G, N, CellId),
-    isInputGrid(G),
-    instance(G, I),
-    isVarInstance(VarInst),
-    instance(VarInst, I),
-    lineNum(VarInst, 0),
-    child(VarInst, N, Child).
+color(Id2, Val) :-
+    copyCell(Id1, Id2),
+    color(Id1, Val).
 
-% copy type from variable to varInstances
-type(VarInstance, T) :-
-    type(VarId, T),
-    isVariable(VarId),
-    varId(VarInstance, VarId).
+% copyCellXY
+type(Id2, cell) :- 
+    copyCellXY(_, Id2).
 
-% copy lineNum from variable to varInstances
-lineNum(VarInstance, L) :-
-    lineNum(VarId, L),
-    isVariable(VarId),
-    varId(VarInstance, VarId).
+y(Id2, Val) :-
+    copyCellXY(Id1, Id2),
+    y(Id1, Val).
 
+x(Id2, Val) :-
+    copyCellXY(Id1, Id2),
+    x(Id1, Val).
 
+% % copyCellColor
+% type(Id2, cell) :- 
+%     copyCellColor(_, Id2).
+
+% color(Id2, Val) :-
+%     copyCellXY(Id1, Id2),
+%     color(Id1, Val).
+
+% mostColor
 hasColor(Id, C) :- 
     child(Id, _, SubId),
     color(SubId, C).
@@ -72,165 +55,299 @@ mostColor(Id, C) :-
     hasColor(Id, C),
     not notMostColor(Id, C).
 
-% Variables must be used after calculation
-% :- 
-%     argVal(ArgId, VarId),
-%     lineNum(ArgId, N1),
-%     lineNum(VarId, N2),
-%     N1 <= N2.
+% copy input grid cells into var0
+copyCell(CellId, NewCellId) :- 
+    child(G, N, CellId),
+    isInputGrid(G),
+    instance(G, I),
+    isVarInstance(VarInst),
+    instance(VarInst, I),
+    lineNum(VarInst, 0),
+    child(VarInst, N, NewCellId).
 
+% copy type from variable to varInstances
+type(VarInstance, T) :-
+    type(VarId, T),
+    isVariable(VarId),
+    varId(VarInstance, VarId).
 
-
-
-
-% show
-var0_train0_numColor(C, N) :- 
-    numColor(var0_train0, C, N).
-
-var0_train0_mostColor(C) :- mostColor(var0_train0, C).
-
-#show var0_train0_numColor/2.
-#show var0_train0_mostColor/1.
-
-
-% Variables must be used after calculation
-% :- 
-%     argVal(ArgId, VarId),
-%     lineNum(ArgId, N1),
-%     lineNum(VarId, N2),
-%     N1 <= N2.
+% copy lineNum from variable to varInstances
+lineNum(VarInstance, L) :-
+    lineNum(VarId, L),
+    isVariable(VarId),
+    varId(VarInstance, VarId).
 
 % Each functionCall must be associated with 1 function
-% {functionId(CallId, FunId): type(FunId, function)}=1 :- 
-%     id(CallId),
-%     type(CallId, functionCall).
+{functionId(CallId, FunId): type(FunId, function)}=1 :- 
+    id(CallId),
+    type(CallId, functionCall).
+
+% Variables must be used after calculation
+:- 
+    argVal(ArgId, VarId),
+    lineNum(ArgId, N1),
+    lineNum(VarId, N2),
+    N1 <= N2.
+
+
+
+%%%%%%%%%%%%%%%%%%%% parseObjects %%%%%%%%%%%%%%%%%%%%%
+id(parseObjects).
+type(parseObjects, function).
+
+% parseObjects first arg is a grid variable
+{argVal(ArgId, VarId) : isVariable(VarId), type(VarId, grid)} = 1 :-  
+    functionId(CallId, parseObjects),
+    type(CallId, functionCall),
+    lineNum(CallId, LineNum),
+    isArgument(ArgId),
+    lineNum(ArgId, LineNum),
+    argPos(ArgId, 0).
+
+% parseObjects returns a list of objects
+type(VarId, listObjects) :-  
+    functionId(CallId, parseObjects),
+    type(CallId, functionCall),
+    lineNum(CallId, LineNum),
+    isVariable(VarId),
+    lineNum(VarId, LineNum).
+
+% Any child that's not the most color must be copied to a a child object
+% of the output var inst
+{copyToObject_parseObjects(LineNum, I, InputChildId, OutputObjId) 
+: child(OutVarInst, _, OutputObjId) }=1 :- 
+    functionId(CallId, parseObjects),
+    type(CallId, functionCall),
+    lineNum(CallId, LineNum),
+    lineNum(ArgId, LineNum),
+    argVal(ArgId, VarId),
+    isVarInstance(ArgVarInst),
+    varId(ArgVarInst, VarId),
+    instance(ArgVarInst, I),
+    child(ArgVarInst, N, InputChildId),
+    color(InputChildId, C),
+    mostColor(ArgVarInst, MostC),
+    C != MostC,
+    isVarInstance(OutVarInst),
+    instance(OutVarInst, I),
+    lineNum(OutVarInst, LineNum).
+    
+% Input children with same color must be copied to same child object
+:- 
+    copyToObject_parseObjects(LineNum, I, ChildId_1, OutputObjId_1),
+    copyToObject_parseObjects(LineNum, I, ChildId_2, OutputObjId_2),
+    ChildId_1 != ChildId_2,
+    color(ChildId_1, C),
+    color(ChildId_2, C),
+    OutputObjId_1 != OutputObjId_2.
+
+% Input children with different color must be copied to different object
+:- 
+    copyToObject_parseObjects(LineNum, I, ChildId_1, OutputObjId_1),
+    copyToObject_parseObjects(LineNum, I, ChildId_2, OutputObjId_2),
+    ChildId_1 != ChildId_2,
+    color(ChildId_1, C1),
+    color(ChildId_2, C2),
+    C1 != C2,
+    OutputObjId_1 = OutputObjId_2.
+
+% Output children are populated in ascending order
+ :- 
+    copyToObject_parseObjects(LineNum, I, _, OutputObjId_1),
+    child(P, N1, OutputObjId_1),
+    child(P, N2, OutputObjId_2),
+    N1 > N2,
+    not copyToObject_parseObjects(LineNum, I, _, OutputObjId_2).
+    
+
+% Copy cells to same index
+copyCell(InputChildId, OutputCellId):- 
+    child(_, N, InputChildId),
+    copyToObject_parseObjects(LineNum, I, InputChildId, OutputObjId),
+    child(OutputObjId, N, OutputCellId).
+
+% Type of output object is object
+type(OutputObjId, object):- 
+    copyToObject_parseObjects(_, _, _, OutputObjId).
+
+
+%%%%%%%%%%%%%%%%%%%% moveDown %%%%%%%%%%%%%%%%%%%%%
+id(moveDown).
+type(moveDown, function).
+
+% moveDown first arg is a grid variable
+{argVal(ArgId, VarId) : isVariable(VarId), type(VarId, grid)} = 1 :-  
+    functionId(CallId, moveDown),
+    type(CallId, functionCall),
+    lineNum(CallId, LineNum),
+    isArgument(ArgId),
+    lineNum(ArgId, LineNum),
+    argPos(ArgId, 0).
+
+% moveDown 2nd arg is a listObject variable
+{argVal(ArgId, VarId) : isVariable(VarId), type(VarId, listObjects)} = 1 :-  
+    functionId(CallId, moveDown),
+    type(CallId, functionCall),
+    lineNum(CallId, LineNum),
+    isArgument(ArgId),
+    lineNum(ArgId, LineNum),
+    argPos(ArgId, 1).
+
+% moveDown returns a grid
+type(VarId, grid) :- 
+    functionId(CallId, moveDown),
+    type(CallId, functionCall),
+    lineNum(CallId, LineNum),
+    isVariable(VarId),
+    lineNum(VarId, LineNum).
+
+% moveDown bind variable instances
+moveDown(FirstArgInst, SecondArgInst, OutputVarInst):- 
+    functionId(CallId, moveDown),
+    type(CallId, functionCall),
+    lineNum(CallId, LineNum),
+    argPos(FirstArg, 0),
+    lineNum(FirstArg, LineNum),
+    argVal(FirstArg, FirstArgVarId),
+    isVarInstance(FirstArgInst),
+    varId(FirstArgInst, FirstArgVarId),
+    instance(FirstArgInst, I),
+    argPos(SecondArg, 1),
+    lineNum(SecondArg, LineNum),
+    argVal(SecondArg, SecondArgVarId),
+    isVarInstance(SecondArgInst),
+    varId(SecondArgInst, SecondArgVarId),
+    instance(SecondArgInst, I),
+    isVariable(VarId),
+    lineNum(OutputVarInst, LineNum),
+    instance(OutputVarInst, I).
+
+% moveDown copy coordinates from input to output
+copyCellXY(InputCell, OutputCell):- 
+    moveDown(InputGrid, ListObjects, OutputGrid),
+    child(InputGrid, N, InputCell),
+    child(OutputGrid, N, OutputCell).
+
+% moveDown copies color of object cell with Y-1 coord to output grid
+moveDown_case1_color(OutputCell, C) :- 
+    moveDown(InputGrid, ListObjects, OutputGrid),
+    child(InputGrid, N, InputGridCell),
+    child(OutputGrid, N, OutputCell),
+    child(ListObjects, _, Obj),
+    child(Obj, _, InputObjCell),
+    x(OutputCell, X),
+    y(OutputCell, Y),
+    x(InputObjCell, X),
+    y(InputObjCell, Y-1),
+    color(InputObjCell, C).
+
+color(Id, C) :- moveDown_case1_color(Id, C).
+
+% moveDown fills with mostColor if cell was occupied by obj and 
+% isn't occupied by obj in output grid . 
+moveDown_case2_color(OutputCell, C) :- 
+    moveDown(InputGrid, ListObjects, OutputGrid),
+    child(InputGrid, N, InputGridCell),
+    child(OutputGrid, N, OutputCell),
+    child(ListObjects, _, Obj),
+    child(Obj, _, InputObjCell),
+    x(OutputCell, X),
+    y(OutputCell, Y),
+    x(InputObjCell, X),
+    y(InputObjCell, Y),
+    not moveDown_case1_color(_, OutputCell),
+    mostColor(InputGrid,C).
+
+color(Id, C) :- moveDown_case2_color(Id, C).
+
+% moveDown fills with existing color otherwise
+color(OutputCell, C) :- 
+    moveDown(InputGrid, ListObjects, OutputGrid),
+    child(InputGrid, N, InputGridCell),
+    child(OutputGrid, N, OutputCell),
+    not moveDown_case1_color(OutputCell, _),
+    not moveDown_case2_color(OutputCell, _),
+    color(InputGridCell, C).
+    
+
+
+
+
+% Output grid must be equal to var2 instance
+gridEqual(OutputGrid, VarInst):- 
+    isOutputGrid(OutputGrid),
+    instance(OutputGrid, I),
+    isVarInstance(VarInst),
+    instance(VarInst, I),
+    lineNum(VarInst, 2).
+
+gridEqual_hasCellValue(G, X, Y, C):-
+    gridEqual(G, _),
+    child(G, _, Cell),
+    x(Cell, X),
+    y(Cell, Y),
+    color(Cell, C).
+
+gridEqual_hasCellValue(G, X, Y, C):-
+    gridEqual(_, G),
+    child(G, _, Cell),
+    x(Cell, X),
+    y(Cell, Y),
+    color(Cell, C).
+
+:- 
+    gridEqual(G1, G2),
+    gridEqual_hasCellValue(G1, X, Y, C),
+    not gridEqual_hasCellValue(G2, X, Y, C).
+
+:- 
+    gridEqual(G1, G2),
+    gridEqual_hasCellValue(G2, X, Y, C),
+    not gridEqual_hasCellValue(G1, X, Y, C).
 
 
 
 
 
 
-% %% Anon entities
-% isAnonEntity(1..500).
-
-% % Anon entities populated in ascending order
-% :- 
-%     isAnonEntity(E1), 
-%     isAnonEntity(E2),
-%     E2 > E1,
-%     not contains(E1, _),
-%     contains(E2, _).
-
-% % Anon entities must contain entities of same instance
-% :- 
-%     isAnonEntity(E1),
-%     contains(E1, Id1),
-%     contains(E1, Id2),
-%     instance(Id1, I1),
-%     instance(Id2, I2),
-%     I1 !=I2.
-
-% % Anon entities must have same instance as their container
-% instance(E1, I) :- 
-%     isAnonEntity(E1),
-%     contains(Id, E1),
-%     instance(Id, I).
-
-% % Anon entities must be used in order of instance
-% :- 
-%     isAnonEntity(E1),
-%     isAnonEntity(E2),
-%     E2 > E1,
-%     instance(E1, I1),
-%     instance(E2, I2),
-%     I2<I1.
-
-% % Anon entities in same instance must be used in order of lineNum
-% :- 
-%     isAnonEntity(E1),
-%     isAnonEntity(E2),
-%     E2 > E1,
-%     instance(E1, I),
-%     instance(E2, I),
-%     contains(VarInstanceId1, E1),
-%     contains(VarInstanceId2, E2),
-%     varId(VarInstanceId1, VarId1),
-%     varId(VarInstanceId2, VarId2),
-%     lineNum(VarId1, LineNum1),
-%     lineNum(VarId2, LineNum2),
-%     LineNum2 < LineNum1.
 
 
-% %% parseObjects
-% id(parseObjects).
-% type(parseObjects, function).
+% functionId(call1, parseObjects).
+% functionId(call2, moveDown).
 
-% % parseObjects first arg is a grid variable
-% {argVal(ArgId, VarId) : isVariable(VarId), type(VarId, grid)} = 1 :-  
-%     functionId(CallId, parseObjects),
-%     type(CallId, functionCall),
-%     lineNum(CallId, LineNum),
-%     isArgument(ArgId),
-%     lineNum(ArgId, LineNum),
-%     argPos(ArgId, 0).
+varTypes(VarId, T) :- 
+    isVariable(VarId),
+    type(VarId, T).
 
-% % parseObjects returns a list of objects
-% type(VarId, listObjects) :-  
-%     functionId(CallId, parseObjects),
-%     type(CallId, functionCall),
-%     lineNum(CallId, LineNum),
-%     isVariable(VarId),
-%     lineNum(VarId, LineNum).
+var1_train0_child_numColors(Id, C,N) :- 
+    child(var1_train0, _, Id),
+    numColor(Id, C, N).
 
-% % parseObjects must put all cells that aren't the mostColor in an object
-% {contains(ObjId, CellId) : isAnonEntity(ObjId)} = 1 :-  
-%     functionId(CallId, parseObjects),
-%     type(CallId, functionCall),
-%     lineNum(CallId, LineNum),
-%     isArgument(ArgId),
-%     lineNum(ArgId, LineNum),
-%     argPos(ArgId, 0),
-%     argVal(ArgId, VarId),
-%     varId(VarInstanceId, VarId),
-%     contains(VarInstanceId, CellId),
-%     color(CellId, C1),
-%     mostColor(VarInstanceId, C2),
-%     C1 != C2.
+var2_train0_child(Child, Type, X, Y, C) :- 
+    child(var2_train0, _ , Child),
+    type(Child, Type),
+    x(Child, X),
+    y(Child, Y),
+    color(Child, C).
 
-% % parseObjects puts cells in objects contained in output var
-% contains(VarInstanceId2, Obj):-  
-%     functionId(CallId, parseObjects),
-%     type(CallId, functionCall),
-%     lineNum(CallId, LineNum),
-%     isArgument(ArgId),
-%     lineNum(ArgId, LineNum),
-%     argPos(ArgId, 0),
-%     argVal(ArgId, VarId1),
-%     varId(VarInstanceId1, VarId1),
-%     contains(VarInstanceId1, CellId),
-%     lineNum(VarId2, LineNum),
-%     varId(VarInstanceId2, VarId2),
-%     instance(VarInstanceId1, I),
-%     instance(VarInstanceId2, I),
-%     isAnonEntity(Obj),
-%     contains(Obj, CellId).
+% #show var2_train0_child/5.
+#show varTypes/2.
+#show argVal/2.
+#show functionId/2.
+% #show var1_train0_child_numColors/3.
+% #show moveDown/3.
 
-% % parseObjects puts cells of same color in same object
-% contains(Obj, CellId2):-  
-%     functionId(CallId, parseObjects),
-%     type(CallId, functionCall),
-%     lineNum(CallId, LineNum),
-%     isArgument(ArgId),
-%     lineNum(ArgId, LineNum),
-%     argPos(ArgId, 0),
-%     argVal(ArgId, VarId),
-%     varId(VarInstanceId, VarId),
-%     contains(VarInstanceId, CellId1),
-%     isAnonEntity(Obj),
-%     contains(Obj, CellId1),
-%     contains(VarInstanceId, CellId2),
-%     color(CellId1, C),
-%     color(CellId2, C).
+% show var0_train0 num colors
+% var0_train0_numColor(C, N) :- 
+%     numColor(var0_train0, C, N).
+% var0_train0_mostColor(C) :- mostColor(var0_train0, C).
+% #show var0_train0_numColor/2.
+% #show var0_train0_mostColor/1.
+
+
+
+
+
 
 % %% moveDown
 % id(moveDown).
