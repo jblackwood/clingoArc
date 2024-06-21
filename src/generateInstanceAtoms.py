@@ -50,7 +50,7 @@ for idx, ioPair in enumerate(task['train']):
 
 
 # program parameters
-programLength = 2
+programLength = 3
 maxNumArgs = 2
 
 # var0 is the inputGrid
@@ -143,6 +143,6 @@ def atomsOfEntity(e: Entity) -> list[str]:
     return atoms
 
 allAtoms : list[str] = [a for e in entities for a in atomsOfEntity(e)]
-
+allAtoms = [f'#const programLength={programLength}.'] + allAtoms
 with open(outputFilepath, 'w') as f:
     f.write('\n'.join(allAtoms))

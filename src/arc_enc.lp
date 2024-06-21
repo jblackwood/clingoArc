@@ -34,7 +34,14 @@ x(Id2, Val) :-
 %     copyCellXY(Id1, Id2),
 %     color(Id1, Val).
 
-% mostColor
+%%%%%%%%%%%%%%%%%%%% Grid and Object Properties %%%%%%%%%%%%%%%%%%%%%
+hasCell(Id, X, Y, C) :-
+    child(Id, _, CellId),
+    type(CellId, cell),
+    x(CellId, X),
+    y(CellId, Y),
+    color(CellId, C).
+
 hasColor(Id, C) :- 
     child(Id, _, SubId),
     color(SubId, C).
@@ -75,10 +82,45 @@ lineNum(VarInstance, L) :-
     isVariable(VarId),
     varId(VarInstance, VarId).
 
-% Each functionCall must be associated with 1 function
-{functionId(CallId, FunId): type(FunId, function)}=1 :- 
+
+%%%%%%%%%%%%%%%%%%%% functionCall constraints %%%%%%%%%%%%%%%%%%%%%
+
+% Each functionCall must be associated with at most 1 function
+{functionId(CallId, FunId): type(FunId, function)} 1 :- 
     id(CallId),
     type(CallId, functionCall).
+
+% functions must be called sequentially
+{functionId(CallId, FunId): type(FunId, function)}=1:-
+    functionId(CallId, _),
+    lineNum(CallId, LineNum),
+    lineNum(PreviousCallId, LineNum-1),
+    type(PreviousCallId, functionCall).
+
+% must have at least 1 function call
+:- #count{CallId : functionId(CallId, _)} = 0.
+
+% track number of function calls
+numFunctionCalls(N) :-
+    N=#count{CallId : functionId(CallId, _)},
+    N=1..programLength.
+
+% Don't allow function calls with exact same args. 
+% Shouldn't be needed since variables are immutable.
+:-
+    functionId(CallId1, F),
+    lineNum(CallId1, LN1),
+    lineNum(ArgId, LN1),
+    argVal(ArgId, Val),
+    argPos(ArgId, Pos),
+    functionId(CallId2, F),
+    lineNum(CallId2, LN2),
+    lineNum(ArgId2, LN2),
+    argVal(ArgId2, Val),
+    argPos(ArgId2, Pos),
+    LN1 != LN2.
+
+
 
 % Variables must be used after calculation
 :- 
@@ -220,6 +262,14 @@ moveDown(FirstArgInst, SecondArgInst, OutputVarInst):-
     lineNum(OutputVarInst, LineNum),
     instance(OutputVarInst, I).
 
+% Object must exist in the InputGrid to be called with moveDown
+:-
+    moveDown(InputGrid, ListObjects, _),
+    child(ListObjects, _, Obj),
+    hasCell(Obj, X, Y, C),
+    not hasCell(InputGrid, X, Y, C).
+
+
 % moveDown copy coordinates from input to output
 copyCellXY(InputCell, OutputCell):- 
     moveDown(InputGrid, ListObjects, OutputGrid),
@@ -277,34 +327,18 @@ gridEqual(OutputGrid, VarInst):-
     instance(OutputGrid, I),
     isVarInstance(VarInst),
     instance(VarInst, I),
-    lineNum(VarInst, 2).
-
-gridEqual_hasCellValue(G, X, Y, C):-
-    gridEqual(G, _),
-    child(G, _, Cell),
-    x(Cell, X),
-    y(Cell, Y),
-    color(Cell, C).
-
-gridEqual_hasCellValue(G, X, Y, C):-
-    gridEqual(_, G),
-    child(G, _, Cell),
-    x(Cell, X),
-    y(Cell, Y),
-    color(Cell, C).
+    numFunctionCalls(N),
+    lineNum(VarInst, N).
 
 :- 
     gridEqual(G1, G2),
-    gridEqual_hasCellValue(G1, X, Y, C),
-    not gridEqual_hasCellValue(G2, X, Y, C).
+    hasCell(G1, X, Y, C),
+    not hasCell(G2, X, Y, C).
 
 :- 
     gridEqual(G1, G2),
-    gridEqual_hasCellValue(G2, X, Y, C),
-    not gridEqual_hasCellValue(G1, X, Y, C).
-
-
-
+    hasCell(G2, X, Y, C),
+    not hasCell(G1, X, Y, C).
 
 
 
@@ -317,17 +351,9 @@ var1_train0_child_numColors(Id, C,N) :-
     child(var1_train0, _, Id),
     numColor(Id, C, N).
 
-var2_train0_child(Child, Type, X, Y, C) :- 
-    child(var2_train0, _ , Child),
-    type(Child, Type),
-    x(Child, X),
-    y(Child, Y),
-    color(Child, C).
-
-% #show var2_train0_child/5.
-#show varType/2.
-#show argVal/2.
-#show functionId/2.
+% #show varType/2.
+% #show argVal/2.
+% #show functionId/2.
 % #show var1_train0_child_numColors/3.
 % #show moveDown/3.
 
