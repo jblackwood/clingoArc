@@ -525,14 +525,14 @@ partOfInstance(varInputGrid_test0_x0_y1, test0).
 type(varInputGrid_test0_x0_y1, cell).
 x(varInputGrid_test0_x0_y1, 0).
 y(varInputGrid_test0_x0_y1, 1).
-color(varInputGrid_test0_x0_y1, 0).
+color(varInputGrid_test0_x0_y1, 1).
 
 valueId(varInputGrid_test0_x1_y1).
 partOfInstance(varInputGrid_test0_x1_y1, test0).
 type(varInputGrid_test0_x1_y1, cell).
 x(varInputGrid_test0_x1_y1, 1).
 y(varInputGrid_test0_x1_y1, 1).
-color(varInputGrid_test0_x1_y1, 0).
+color(varInputGrid_test0_x1_y1, 1).
 
 valueId(varInputGrid_test0_x2_y1).
 partOfInstance(varInputGrid_test0_x2_y1, test0).

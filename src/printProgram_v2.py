@@ -149,7 +149,6 @@ def listObjectValue(e: dict, s: list[dict]) -> dict:
     del e['objList']
     return e
 
-
 def varValuesForAnswerSet(s : list[dict]) -> list[dict]:
     varValues = [e for e in s if e.get('assignedToVar') and e.get('type')]
     nestedValues = []
@@ -165,6 +164,28 @@ def varValuesForAnswerSet(s : list[dict]) -> list[dict]:
     nestedValues = [e for e in nestedValues if e is not None]
     return sorted(nestedValues, key=lambda e: e['partOfInstance'] + str(e['assignedToVar']))
 
+def testOutputGrids(s: list[Atom]) -> dict[list[list[int]]]:
+    outputAtoms = [a for a in s if a['propertyName'] == 'hasCellOutputTestGrid']
+    entities = []
+    for a in outputAtoms:
+        entities.append({
+            'instanceId': a['literals'][0],
+            'x': int(a['literals'][1]),
+            'y': int(a['literals'][2]),
+            'color': int(a['literals'][3])
+        })
+    instances = [e['instanceId'] for e in entities]
+    result = {}
+    for inst in instances:
+        instEntities = [e for e in entities if e['instanceId'] == inst]
+        xDim = 1 + max([e['x'] for e in instEntities])
+        yDim = 1 + max([e['y'] for e in instEntities])
+        outputGrid = [[-1 for i in range(xDim)] for j in range(yDim)]
+        for e in instEntities:
+            outputGrid[e['y']][e['x']] = e['color']
+        result['inst'] = outputGrid
+    return result
+
 
  
 
@@ -178,16 +199,19 @@ if result['Result'] != "SATISFIABLE":
 witnesses = result['Call'][0]['Witnesses']
 
 answerSets : list[list[dict]] = []
+atomSets : list[list[Atom]] = []
 
 for w in witnesses:
     atoms = [atomToDict(a) for a in w['Value']]
+    atomSets.append(atoms)
     entities : list[dict] = entitiesForAtoms(atoms)
     answerSets.append(entities)
 
 programs : list[Program] = []
-for s in answerSets:
+for idx, s in enumerate(answerSets):
     p = {'programStr': programFromAnswerSetEntities(s)}
     # p[f'values'] = varValuesForAnswerSet(s)
+    p['outputGrid'] = testOutputGrids(atomSets[idx])
     programs.append(p)
 
 
