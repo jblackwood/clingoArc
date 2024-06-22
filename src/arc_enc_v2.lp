@@ -59,7 +59,9 @@ x(Id2, Val) :-
     isPopulated(CellId1),
     not isPopulated(CellId2).
 
-% Populate cellList of object in order of y, and then x within each y. Else populate by color order
+% Populate cellList of object in order of y, and then x within each y.
+% UNSAT WARNING: Input and Output grids from the task must follow this rule as well.
+% This is currently in-sync with generateInstanceAtoms logic so it works.
 :-
     type(Id, object),
     cellList(Id, N1, CellId1),
@@ -80,6 +82,7 @@ x(Id2, Val) :-
     N1<N2,
     X1>X2.
 
+% If no X or Y populate in order of color
 :-
     type(Id, object),
     cellList(Id, N1, CellId1),
