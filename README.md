@@ -25,7 +25,8 @@ My approach in this repository is motivated by the following thinking:
 3. **The Potential of SAT Solvers and Theorem Provers**  
    My intuition is that techniques from **SAT solving** and **automated theorem proving** (e.g., **CDCL**, **superposition calculus**, and **Knuth-Bendix completion**) may have valuable insights.
    These algorithms are well-suited for certain types of NP-complete problems, and my intuition is that the **symmetry-breaking techniques** in these algorithms might be useful for solving ARC-like tasks.
-   Although there has been progress in combining deep learning with theorem provers, the focus has been primarily on mathematical theorems rather than benchmarks like ARC. I believe deeper integration might have untapped potential for program search in ARC-like tasks.
+   Although there has been progress in combining deep learning with theorem provers, the focus has been primarily on mathematical theorems rather than benchmarks like ARC.
+   I believe deeper integration of deep learning and these algorithms might have untapped potential for program search in ARC-like tasks.
 
 
 ## Details of the approach
