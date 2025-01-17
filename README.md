@@ -3,7 +3,7 @@
 This repository is a proof-of-concept for encoding the program search required to solve tasks in the [**ARC-AGI benchmark**]((https://arcprize.org/arc)) as first-order logic metaprogramming. 
 The first-order logic encoding is then fed into [**clingo**](https://potassco.org/clingo/), a popular tool for Answer Set Programming (ASP). ASP is a logic programming paradigm that compiles first-order logic programs into ground SAT problems that are then solved using conflict-driven clause learning (CDCL) and other modern SAT heuristics. 
 
-This reposistory reflects my passiong for building AGI, and I think the ARC benchmark is a key tool for pushing research in the right direction. My research interests are centered around solving ARC and AGI, not any of the specific techniques I am using.
+This reposistory reflects my passiong for building AGI, as I think the ARC benchmark is a key tool for pushing research in the right direction. My research interests are centered around solving ARC and AGI, not any of the specific techniques I am using.
 
 
 ## Motivations and vision
