@@ -5,7 +5,7 @@ The first-order logic encoding is then fed into [**clingo**](https://potassco.or
 
 This repository reflects my passion for building AGI, as I think the ARC benchmark is a key tool for pushing research in the right direction. My research interests are centered around solving ARC and AGI, not any of the specific techniques I am using. 
 
-I took 2 weeks vacation in July 2024 to work on this project. I plan to pursue the approaches discussed in the [**Future Directions**](#future-directions) section for my next vacaction.
+I took 2 weeks vacation in July 2024 to work on this project. I plan to pursue the approaches discussed in the [**Future Directions**](#future-directions) section for my next vacation.
 
 
 ## Motivations and vision
