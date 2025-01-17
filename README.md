@@ -103,7 +103,7 @@ Despite demonstrating the feasibility of encoding ARC tasks in first-order logic
 
 ## Future Directions
 
-The issue I ran into with the grounding bottleneck in ASP motivates me to explore alternative techniques for first-order logic program search. In the future, I plan to pursue:
+The issue with the grounding bottleneck in ASP motivates me to explore alternative techniques for first-order logic program search. In the future, I plan to pursue:
 
 1. **Automated Theorem Proving Techniques**  
    Program search can be encoded into first-order-logic theorem proving as this repository demonstrates. Tools like the [**E-Theorem Prover**](https://wwwlehre.dhbw-stuttgart.de/~sschulz/E/E.html) and [**Vampire**](https://vprover.github.io/), which operate directly on first-order logic without grounding, can potentially bypass the grounding bottleneck I encountered with clingo. The tradeoff with these tools is they might never halt as first-order logic theorem proving is semidecidable. I anticipate I might need to implement my own basic theorem prover to specialize the heuristics for ARC-like tasks.
